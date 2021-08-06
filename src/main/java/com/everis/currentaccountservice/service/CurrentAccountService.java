@@ -4,7 +4,6 @@ import com.everis.currentaccountservice.model.CurrentAccount;
 import com.everis.currentaccountservice.repository.CurrentAccountRepository;
 import com.everis.currentaccountservice.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -35,18 +34,22 @@ public class CurrentAccountService {
         return account.flatMap(repository::insert);
     }
 
-    //Revisar
     public Mono<CurrentAccount> update( CurrentAccount account) {
        return repository.findByAccountNumber(account.getAccountNumber())
-               .map(a -> {account.setId(a.getId()); return a;})
-               .flatMap(repository::save);
+               .flatMap( a -> {
+                   account.setId(a.getId());
+                   return repository.save(account);
+               })
+               .switchIfEmpty(Mono.empty());
     }
 
     public Mono<CurrentAccount> disable(String accountNumber) {
         return repository.findByAccountNumber(accountNumber)
-                //.switchIfEmpty(Mono.error(new Exception("Cuenta no registrada")))
-                .map(a -> {a.setIsActive(false); return a;})
-                .flatMap(repository::save);
+                .flatMap( a -> {
+                    a.setIsActive(false);
+                    return repository.save(a);
+                })
+                .switchIfEmpty(Mono.empty());
     }
 
     private Mono<CurrentAccount> setNewCurrentAccount() {

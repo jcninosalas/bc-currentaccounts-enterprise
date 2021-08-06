@@ -15,14 +15,9 @@ public class CurrentAccountController {
     private CurrentAccountService service;
 
     @PostMapping("/c-account/new")
-    public Mono<?> createAccount() {
+    public Mono<CurrentAccount> createAccount() {
         return service.create();
     }
-
-//    @GetMapping("/c-account/find")
-//    public Mono<?> getAccountById(@RequestParam String account) throws Exception {
-//        return service.getByAccountNumber(account);
-//    }
 
     @GetMapping("/c-account/find")
     public Mono<ResponseEntity<CurrentAccount>> getAccountById(@RequestParam String account) {
@@ -35,12 +30,16 @@ public class CurrentAccountController {
     }
 
     @PutMapping("/c-account/disable")
-    public Mono<CurrentAccount> disableAccount(@RequestParam String account) {
-        return service.disable(account);
+    public Mono<ResponseEntity<CurrentAccount>> disableAccount(@RequestParam String account) {
+        return service.disable(account)
+                .flatMap( a -> Mono.just(ResponseEntity.ok(a)))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
     @PutMapping("/c-account/update")
-    public Mono<CurrentAccount> updateAccount(@RequestBody CurrentAccount account) {
-        return service.update(account);
+    public Mono<ResponseEntity<CurrentAccount>> updateAccount(@RequestBody CurrentAccount account) {
+        return service.update(account)
+                .flatMap(a -> Mono.just(ResponseEntity.ok(a)))
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 }
