@@ -1,5 +1,6 @@
 package com.everis.currentaccountservice.controller;
 
+import com.everis.currentaccountservice.bean.ResponseCurrentAccount;
 import com.everis.currentaccountservice.model.CurrentAccount;
 import com.everis.currentaccountservice.service.CurrentAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,8 @@ public class CurrentAccountController {
     private CurrentAccountService service;
 
     @PostMapping("/c-account/new")
-    public Mono<CurrentAccount> createAccount() {
-        return service.create();
+    public Mono<ResponseCurrentAccount> createAccount(@RequestParam String ruc) {
+        return service.create(ruc);
     }
 
     @GetMapping("/c-account/find")
