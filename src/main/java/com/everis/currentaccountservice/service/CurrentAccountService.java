@@ -32,7 +32,7 @@ public class CurrentAccountService {
     private CurrentAccountRepository repository;
 
     @Autowired
-    EnterpriseAccountsRepository eAccountsRepository;
+    private EnterpriseAccountsRepository eAccountsRepository;
 
     @Autowired
     private EnterpriseCustomerExternalService ecExternalService;
@@ -53,8 +53,34 @@ public class CurrentAccountService {
                 .switchIfEmpty(
                         addNewAccountToNewCustomer(ruc)
                 );
+    }
 
+    public Mono<CurrentAccount> update( CurrentAccount account) {
+       return repository.findByAccountNumber(account.getAccountNumber())
+               .flatMap( a -> {
+                   account.setId(a.getId());
+                   return repository.save(account);
+               })
+               .switchIfEmpty(Mono.empty());
+    }
 
+    public Mono<CurrentAccount> disable(String accountNumber) {
+        return repository.findByAccountNumber(accountNumber)
+                .flatMap( a -> {
+                    a.setIsActive(false);
+                    return repository.save(a);
+                })
+                .switchIfEmpty(Mono.empty());
+    }
+
+    private CurrentAccount createNewCurrentAccount() {
+        CurrentAccount account = new CurrentAccount();
+        account.setAccountNumber(Utils.generateAccountNumber());
+        account.setCreatedAt(new Date());
+        account.setAccountBalance(new BigDecimal(0));
+        account.setIsActive(true);
+        account.setMaintenanceFee(3);
+        return account;
     }
 
     private Mono<? extends ResponseCurrentAccount> addNewAccountToNewCustomer(String ruc) {
@@ -101,33 +127,4 @@ public class CurrentAccountService {
         responseBody.put("account:", newAccount);
         response.setBody(responseBody);
     }
-
-    public Mono<CurrentAccount> update( CurrentAccount account) {
-       return repository.findByAccountNumber(account.getAccountNumber())
-               .flatMap( a -> {
-                   account.setId(a.getId());
-                   return repository.save(account);
-               })
-               .switchIfEmpty(Mono.empty());
-    }
-
-    public Mono<CurrentAccount> disable(String accountNumber) {
-        return repository.findByAccountNumber(accountNumber)
-                .flatMap( a -> {
-                    a.setIsActive(false);
-                    return repository.save(a);
-                })
-                .switchIfEmpty(Mono.empty());
-    }
-
-    private CurrentAccount createNewCurrentAccount() {
-        CurrentAccount account = new CurrentAccount();
-        account.setAccountNumber(Utils.generateAccountNumber());
-        account.setCreatedAt(new Date());
-        account.setAccountBalance(new BigDecimal(0));
-        account.setIsActive(true);
-        account.setMaintenanceFee(3);
-        return account;
-    }
-
 }
