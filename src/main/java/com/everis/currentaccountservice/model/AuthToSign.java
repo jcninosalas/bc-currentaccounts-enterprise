@@ -7,11 +7,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.List;
 
 //Lista que firmantes autorizados
 @Getter
 @Setter
-@AllArgsConstructor
 @Document
 public class AuthToSign {
 
@@ -19,5 +19,11 @@ public class AuthToSign {
     private String id;
     private String accountNumber;
     private String ruc;
-    private ArrayList<Customer> authToSignCustomers;
+    private List<Customer> authToSignCustomers;
+
+    public AuthToSign(String accountNumber, String ruc, List<Customer> authToSignCustomers) {
+        this.accountNumber = accountNumber;
+        this.ruc = ruc;
+        this.authToSignCustomers = authToSignCustomers;
+    }
 }

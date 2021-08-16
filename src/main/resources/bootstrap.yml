@@ -1,9 +1,27 @@
 spring:
   application:
-    name: current-account-enterprise-service
+    name: account-service
+  config:
+    import: optional:configserver:http://localhost:8888
+#    name: current-account-enterprise-service
 
-  cloud:
-    config:
-      uri: ${CONFIG_URI}
-      username: ${SECURITY_USERNAME}
-      password: ${SECURITY_PASSWORD}
+
+#  cloud:
+#    config:
+#      uri: ${CONFIG_URI}
+#      username: ${SECURITY_USERNAME}
+#      password: ${SECURITY_PASSWORD}
+
+
+##CONFIGURACION LOCAL
+  data:
+    mongo:
+      host: ${db.host}
+      port: ${db.port}
+      database: ${db.database}
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
