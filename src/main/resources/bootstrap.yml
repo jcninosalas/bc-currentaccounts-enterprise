@@ -16,8 +16,16 @@ spring:
 #      port: ${db.port}
 #      database: ${db.database}
 
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        web: DEBUG
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: ERROR
+      root: DEBUG
+
+server:
+  error:
+    include-stacktrace: always
+
+
